@@ -2,6 +2,7 @@
 import { template1, createInitTemplate } from "./templates.js";
 
 window.addEventListener("DOMContentLoaded", () => {
+  let isProgrammaticChange = false;
   const pageBreakButton = function (context) {
     const ui = $.summernote.ui;
 
@@ -28,7 +29,25 @@ window.addEventListener("DOMContentLoaded", () => {
     focus: true, // set focus to editable area after initializing summernote
     callbacks: {
       onChange: function (contents, $editable) {
-        // Send a message to the parent window when the content changes
+        // If the change was made by the user
+        if (!isProgrammaticChange) {
+          // Modify the contents
+          let newContents = contents.replace(
+            "[Organisation_Logo]",
+            `<img src="https://teradoengineering.com/assets/img/terado_engineering_white_logo.png" height="90" width="auto" />`
+          );
+
+          // Set the flag to true to indicate that the next change will be made by your code
+          isProgrammaticChange = true;
+
+          // Set the new contents
+          $(this).summernote("code", newContents);
+        } else {
+          // If the change was made by your code, reset the flag
+          isProgrammaticChange = false;
+        }
+
+        // Send a message to the parent window
         parent.postMessage(
           {
             type: "contentChange",
