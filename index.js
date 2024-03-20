@@ -35,7 +35,7 @@ window.addEventListener("DOMContentLoaded", () => {
             type: "contentChange",
             data: contents,
           },
-          "https://test.uni5.tech"
+          "*"
         );
       },
       onInit: function () {
@@ -71,7 +71,7 @@ window.addEventListener("DOMContentLoaded", () => {
         type: "editorInitialized",
         data: null,
       },
-      "https://test.uni5.tech"
+      "*"
     );
   }
 
@@ -89,7 +89,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   window.addEventListener("message", function (event) {
-    if (event.origin !== "https://test.uni5.tech") return;
+    // if (event.origin !== "https://test.uni5.tech") return;
     if (event.data.type === "setTemplateContent") {
       initCreateTemplate(event.data?.data);
     }
@@ -110,5 +110,5 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  parent.postMessage("sending from iframe", "https://test.uni5.tech");
+  parent.postMessage("sending from iframe", "*");
 });
