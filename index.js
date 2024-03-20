@@ -1,20 +1,13 @@
 // import { template1 } from "./templates";
-import { template1 } from "./templates.js";
+import { template1, createInitTemplate } from "./templates.js";
 
 window.addEventListener("DOMContentLoaded", () => {
-  window.addEventListener("message", function (event) {
-    if (event.origin !== "http://localhost:3000") return;
-    console.log("receiving in iframe", event.data);
-  });
-
-  parent.postMessage("sending from iframe", "http://localhost:3000");
-
-  const HelloButton = function (context) {
+  const pageBreakButton = function (context) {
     const ui = $.summernote.ui;
 
     // create button
     const button = ui.button({
-      contents: '<i class="fa fa-child"/> Page Break',
+      contents: '<i class="fa fa-cut"/> Page Break',
       tooltip: "Insert Page Break",
       click: function () {
         // invoke insertNode method with a div that represents a page break
@@ -36,7 +29,20 @@ window.addEventListener("DOMContentLoaded", () => {
     callbacks: {
       onChange: function (contents, $editable) {
         // Send a message to the parent window when the content changes
-        parent.postMessage(contents, "http://localhost:3000");
+        parent.postMessage(
+          {
+            type: "contentChange",
+            data: contents,
+          },
+          "http://localhost:3000"
+        );
+      },
+      onInit: function () {
+        // console.log("is this initializing correctly?");
+        const loader = document.querySelector(".loader");
+        loader.classList.add("hide");
+        // initCreateTemplate();
+        editorInitialized();
       },
     },
     toolbar: [
@@ -50,13 +56,43 @@ window.addEventListener("DOMContentLoaded", () => {
       ["insert", ["link", "picture", "video"]],
       ["view", ["fullscreen", "codeview", "help"]],
       // Add the hello button
-      ["myButton", ["hello"]],
+      ["myButton", ["pageBreak"]],
     ],
     buttons: {
       // Map the hello button to the HelloButton function
-      hello: HelloButton,
+      pageBreak: pageBreakButton,
     },
   });
 
-  $("#summernote").summernote("code", template1);
+  function editorInitialized() {
+    parent.postMessage(
+      {
+        type: "editorInitialized",
+        data: null,
+      },
+      "http://localhost:3000"
+    );
+  }
+
+  function initCreateTemplate(template) {
+    //   parent.postMessage(
+    //       {
+    //           type: "init",
+    //           data: null,
+    //         },
+    //         "http://localhost:3000"
+    //         );
+    if (template) {
+      $("#summernote").summernote("code", template);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (event.origin !== "http://localhost:3000") return;
+    if (event.data.type === "setTemplateContent") {
+      initCreateTemplate(event.data?.data);
+    }
+  });
+
+  parent.postMessage("sending from iframe", "http://localhost:3000");
 });
