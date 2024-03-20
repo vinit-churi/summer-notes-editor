@@ -29,25 +29,7 @@ window.addEventListener("DOMContentLoaded", () => {
     focus: true, // set focus to editable area after initializing summernote
     callbacks: {
       onChange: function (contents, $editable) {
-        // If the change was made by the user
-        if (!isProgrammaticChange) {
-          // Modify the contents
-          let newContents = contents.replace(
-            "[Organisation_Logo]",
-            `<img src="https://teradoengineering.com/assets/img/terado_engineering_white_logo.png" height="90" width="auto" />`
-          );
-
-          // Set the flag to true to indicate that the next change will be made by your code
-          isProgrammaticChange = true;
-
-          // Set the new contents
-          $(this).summernote("code", newContents);
-        } else {
-          // If the change was made by your code, reset the flag
-          isProgrammaticChange = false;
-        }
-
-        // Send a message to the parent window
+        // Send a message to the parent window when the content changes
         parent.postMessage(
           {
             type: "contentChange",
@@ -110,6 +92,21 @@ window.addEventListener("DOMContentLoaded", () => {
     if (event.origin !== "http://localhost:3000") return;
     if (event.data.type === "setTemplateContent") {
       initCreateTemplate(event.data?.data);
+    }
+
+    if (event.data.type === "replaceWithFieldValue") {
+      const { key, value } = event.data.data;
+      const content = $("#summernote").summernote("code");
+      const newContent = content.replace(
+        new RegExp(`\\[${key}\\]`, "g"),
+        value
+      );
+      $("#summernote").summernote("code", newContent);
+    }
+
+    if (event.data.type === "fieldChangeContent") {
+      const newContentFromParent = event.data.data;
+      $("#summernote").summernote("code", newContentFromParent);
     }
   });
 
