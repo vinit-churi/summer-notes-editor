@@ -35,7 +35,7 @@ window.addEventListener("DOMContentLoaded", () => {
             type: "contentChange",
             data: contents,
           },
-          "http://localhost:3000"
+          "https://test.uni5.tech"
         );
       },
       onInit: function () {
@@ -71,7 +71,7 @@ window.addEventListener("DOMContentLoaded", () => {
         type: "editorInitialized",
         data: null,
       },
-      "http://localhost:3000"
+      "https://test.uni5.tech"
     );
   }
 
@@ -81,7 +81,7 @@ window.addEventListener("DOMContentLoaded", () => {
     //           type: "init",
     //           data: null,
     //         },
-    //         "http://localhost:3000"
+    //         "https://test.uni5.tech"
     //         );
     if (template) {
       $("#summernote").summernote("code", template);
@@ -89,7 +89,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   window.addEventListener("message", function (event) {
-    if (event.origin !== "http://localhost:3000") return;
+    if (event.origin !== "https://test.uni5.tech") return;
     if (event.data.type === "setTemplateContent") {
       initCreateTemplate(event.data?.data);
     }
@@ -110,5 +110,5 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  parent.postMessage("sending from iframe", "http://localhost:3000");
+  parent.postMessage("sending from iframe", "https://test.uni5.tech");
 });
