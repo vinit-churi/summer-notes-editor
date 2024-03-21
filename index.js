@@ -14,7 +14,9 @@ window.addEventListener("DOMContentLoaded", () => {
         // invoke insertNode method with a div that represents a page break
         context.invoke(
           "editor.insertNode",
-          $('<div class="page-break" data-content="Next Page"></div>')[0]
+          $(
+            '<div class="page-break" style="page-break-after: always;" data-content="Next Page"></div>'
+          )[0]
         );
         // insert a new paragraph after the page break
         context.invoke("editor.insertNode", $("<p><br></p>")[0]);
